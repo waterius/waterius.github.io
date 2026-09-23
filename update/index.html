@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Прошивка ESP через браузер — Ватериус</title>
+<meta name="description" content="Залить прошивку в ESP8266 или ESP32 прямо из браузера, без установки программ. Файл никуда не загружается — он уходит в плату по USB.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 23 23'%3E%3Crect width='23' height='23' rx='3.2' fill='%23000'/%3E%3Ccircle cx='6.5' cy='11.3' r='3.9' fill='%231655F5'/%3E%3Ccircle cx='16.1' cy='11.3' r='3.9' fill='%23F53410'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="flasher.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container container--narrow">
+    <a class="logo"
+       href="https://waterius.ru?utm_source=flasher&amp;utm_medium=link&amp;utm_campaign=flasher_24092026&amp;utm_content=header&amp;utm_term=esp"
+       target="_blank" rel="noopener">
+      <svg viewBox="0 0 170 29" fill="none" role="img" aria-label="Ватериус" xmlns="http://www.w3.org/2000/svg">
+      <path d="M18.9547 0.433594H3.65507C1.89454 0.433594 0.467346 1.86079 0.467346 3.62132V18.9209C0.467346 20.6814 1.89454 22.1086 3.65507 22.1086H18.9547C20.7152 22.1086 22.1424 20.6814 22.1424 18.9209V3.62132C22.1424 1.86079 20.7152 0.433594 18.9547 0.433594Z" fill="black"/>
+      <path d="M6.53591 15.1722C8.69065 15.1722 10.4374 13.4254 10.4374 11.2706C10.4374 9.11591 8.69065 7.36914 6.53591 7.36914C4.38116 7.36914 2.6344 9.11591 2.6344 11.2706C2.6344 13.4254 4.38116 15.1722 6.53591 15.1722Z" fill="#1655F5"/>
+      <path d="M16.073 15.1722C18.2277 15.1722 19.9745 13.4254 19.9745 11.2706C19.9745 9.11591 18.2277 7.36914 16.073 7.36914C13.9182 7.36914 12.1714 9.11591 12.1714 11.2706C12.1714 13.4254 13.9182 15.1722 16.073 15.1722Z" fill="#F53410"/>
+      <path d="M44.5237 10.8976C45.4244 11.372 46.1718 12.0904 46.6796 12.9696C47.1873 13.8489 47.4347 14.8532 47.3931 15.8664C47.4183 16.7192 47.2553 17.5671 46.9157 18.3505C46.5761 19.1338 46.0681 19.8336 45.4275 20.4005C44.1075 21.5793 42.3843 22.2108 40.6114 22.1655H31.3444V0.431716H39.9562C41.6922 0.389354 43.3784 1.01172 44.6668 2.17042C45.2914 2.71479 45.7883 3.38881 46.1227 4.14501C46.4571 4.9012 46.6208 5.72117 46.6023 6.54714C46.6259 7.38416 46.4499 8.21482 46.0886 8.97105C45.7273 9.72727 45.191 10.3875 44.5237 10.8976ZM39.9562 4.43747H35.6484V9.21889H39.9524C40.2626 9.2253 40.5708 9.16804 40.8578 9.05071C41.1448 8.93338 41.4044 8.75847 41.6205 8.5369C41.8419 8.3115 42.0153 8.04402 42.1305 7.75044C42.2456 7.45686 42.3001 7.1432 42.2908 6.82818C42.3004 6.51441 42.2475 6.20185 42.135 5.90857C42.0226 5.61528 41.8528 5.34707 41.6356 5.11946C41.4195 4.89481 41.1582 4.71797 40.8689 4.60047C40.5795 4.48296 40.2685 4.42742 39.9562 4.43747ZM35.6484 18.1597H40.6076C40.9439 18.1696 41.2786 18.1098 41.5905 17.984C41.9023 17.8582 42.1844 17.6692 42.4188 17.429C42.6573 17.185 42.8439 16.8956 42.9674 16.5782C43.091 16.2608 43.149 15.9219 43.138 15.5816C43.1471 15.2461 43.0881 14.9123 42.9645 14.6C42.8409 14.2877 42.6553 14.0035 42.4188 13.7642C42.1842 13.5243 41.9021 13.3354 41.5903 13.2096C41.2785 13.0838 40.9439 13.0239 40.6076 13.0335H35.6484V18.1597Z" fill="black"/>
+      <path d="M62.1349 8.47226V6.64363H66.1602V22.1645H62.1349V20.3321C60.9274 21.831 59.2329 22.5805 57.0514 22.5805C56.0403 22.5901 55.0386 22.3864 54.1124 21.9827C53.1862 21.579 52.3565 20.9845 51.678 20.2385C50.2043 18.6535 49.4099 16.559 49.4639 14.4003C49.4136 12.2523 50.2081 10.1697 51.678 8.59592C52.3489 7.8391 53.1749 7.23412 54.1005 6.82173C55.0261 6.40934 56.0298 6.19911 57.0439 6.20521C59.2404 6.20771 60.9374 6.96339 62.1349 8.47226ZM54.7093 17.5705C55.5465 18.3502 56.6503 18.7841 57.797 18.7841C58.9437 18.7841 60.0475 18.3502 60.8847 17.5705C61.2983 17.1551 61.6223 16.6599 61.8366 16.1154C62.0509 15.5709 62.1511 14.9885 62.1311 14.4041C62.1533 13.8239 62.054 13.2454 61.8394 12.7054C61.6248 12.1655 61.2997 11.6758 60.8847 11.2677C60.0558 10.4718 58.9488 10.027 57.797 10.027C56.6451 10.027 55.5382 10.4718 54.7093 11.2677C54.3024 11.6804 53.9847 12.1715 53.7756 12.7108C53.5664 13.2502 53.4703 13.8264 53.493 14.4041C53.4723 14.986 53.5692 15.5662 53.7782 16.1101C53.9871 16.654 54.3037 17.1507 54.7093 17.5705Z" fill="black"/>
+      <path d="M68.2805 6.64453H82.0999V10.4929H77.2349V22.1654H73.2095V10.4929H68.2805V6.64453Z" fill="black"/>
+      <path d="M98.7924 16.0498H87.0327C87.5523 17.9959 89.0183 18.9689 91.4308 18.9689C92.9696 18.9689 94.1344 18.4518 94.9252 17.4176L98.1711 19.2911C96.6322 21.507 94.3654 22.6149 91.3705 22.6149C88.7924 22.6149 86.7226 21.8392 85.1612 20.2879C84.3897 19.5203 83.7842 18.6037 83.3821 17.5945C82.9799 16.5854 82.7896 15.5049 82.8228 14.4198C82.7946 13.3424 82.9844 12.2703 83.3809 11.2674C83.7774 10.2644 84.3726 9.35107 85.1311 8.58166C86.6373 7.00783 88.6129 6.22092 91.058 6.22092C92.1149 6.18553 93.167 6.37821 94.1419 6.78571C95.1169 7.19321 95.9917 7.80589 96.7063 8.58166C97.4502 9.35909 98.0327 10.2749 98.4204 11.2767C98.8081 12.2785 98.9933 13.3466 98.9656 14.4198C98.9484 14.9666 98.8905 15.5115 98.7924 16.0498ZM86.9686 12.9434H94.9252C94.7739 12.0408 94.2976 11.2239 93.5852 10.6453C92.8728 10.0668 91.9731 9.76609 91.0542 9.7995C90.0923 9.7629 89.1467 10.0537 88.3732 10.6239C87.6437 11.2071 87.146 12.0291 86.9686 12.9434Z" fill="black"/>
+      <path d="M110.834 6.20935C111.849 6.19906 112.854 6.4074 113.78 6.82007C114.706 7.23274 115.532 7.83996 116.2 8.60006C117.691 10.1636 118.503 12.2492 118.459 14.4045C118.487 15.4776 118.302 16.5457 117.914 17.5475C117.527 18.5493 116.944 19.4652 116.2 20.2426C115.53 20.9984 114.704 21.6008 113.777 22.0083C112.851 22.4159 111.847 22.6189 110.834 22.6033C108.65 22.6033 106.966 21.8539 105.781 20.355V28.374H101.759V6.64028H105.785V8.47265C106.967 6.96378 108.65 6.20935 110.834 6.20935ZM106.997 17.5709C107.834 18.3506 108.938 18.7845 110.085 18.7845C111.232 18.7845 112.335 18.3506 113.173 17.5709C113.586 17.1556 113.91 16.6605 114.125 16.1159C114.339 15.5714 114.439 14.9889 114.419 14.4045C114.441 13.8242 114.342 13.2458 114.127 12.7058C113.913 12.1659 113.588 11.6762 113.173 11.2681C112.344 10.4722 111.237 10.0274 110.085 10.0274C108.933 10.0274 107.826 10.4722 106.997 11.2681C106.591 11.6809 106.273 12.172 106.064 12.7114C105.855 13.2507 105.758 13.8268 105.781 14.4045C105.76 14.9864 105.857 15.5666 106.066 16.1105C106.275 16.6544 106.592 17.151 106.997 17.5709Z" fill="black"/>
+      <path d="M125.215 15.4597L132.547 6.64258H135.559V22.1672H131.613V13.3501L124.281 22.1672H121.269V6.64633H125.2V15.4597H125.215Z" fill="black"/>
+      <path d="M145.933 17.0748L149.397 6.64258H153.701L148.023 22.1672C146.441 26.534 143.698 28.6037 139.792 28.3763V24.6516C140.67 24.7179 141.547 24.5125 142.303 24.0633C143 23.5374 143.518 22.8116 143.787 21.9836L137.476 6.64633H141.75L145.933 17.0748Z" fill="black"/>
+      <path d="M162.403 22.6008C161.315 22.6259 160.233 22.4311 159.222 22.0281C158.211 21.6252 157.294 21.0225 156.524 20.2564C155.754 19.4904 155.148 18.5769 154.743 17.5713C154.338 16.5656 154.143 15.4887 154.168 14.4056C154.176 12.9663 154.562 11.5539 155.288 10.3092C156.014 9.0644 157.056 8.03059 158.308 7.31057C159.561 6.59056 160.981 6.20943 162.427 6.20512C163.874 6.2008 165.296 6.57344 166.553 7.28597C167.76 7.96905 168.745 8.98205 169.392 10.205L165.928 12.2248C165.619 11.5871 165.124 11.0569 164.508 10.7034C163.863 10.3331 163.129 10.1428 162.384 10.1526C161.826 10.1335 161.271 10.2299 160.752 10.4356C160.234 10.6414 159.764 10.9521 159.372 11.3479C158.977 11.7515 158.668 12.2304 158.464 12.756C158.26 13.2815 158.166 13.8427 158.186 14.4056C158.172 14.9656 158.27 15.5227 158.474 16.0448C158.677 16.567 158.982 17.044 159.372 17.4484C159.766 17.8404 160.236 18.1476 160.755 18.3507C161.273 18.5537 161.828 18.6484 162.384 18.6287C163.143 18.6422 163.892 18.4547 164.553 18.0854C165.17 17.7427 165.666 17.2194 165.973 16.5865L169.467 18.5725C168.782 19.8066 167.763 20.8255 166.526 21.5141C165.274 22.2361 163.85 22.6113 162.403 22.6008Z" fill="black"/>
+      </svg>
+    </a>
+    <p class="tagline">Контролируйте счетчики с телефона,<br>передачу
+      показаний поручите нам.</p>
+  </div>
+</header>
+
+<main class="container container--narrow">
+
+  <div class="card">
+
+    <h2>Прошивка ESP через браузер</h2>
+
+    <div id="env-notice"></div>
+
+    <h3>Подключить плату</h3>
+    <p class="hint">Плата подключается к компьютеру кабелем — обязательно
+      таким, в котором есть данные, а не только питание.</p>
+
+    <div class="form-row">
+      <span class="field-label"><label for="baudrate">Скорость</label></span>
+      <select class="input" id="baudrate">
+        <option value="115200">115200</option>
+        <option value="230400">230400</option>
+        <option value="460800">460800</option>
+        <option value="921600" selected>921600</option>
+        <option value="1500000">1500000</option>
+      </select>
+      <span class="form-row__tail">
+        <button class="btn btn--primary btn--sm" id="btn-connect">Подключить</button>
+        <button class="btn btn--outline btn--sm" id="btn-disconnect" hidden>Отключить</button>
+      </span>
+    </div>
+
+    <dl class="chip-info" id="chip-info" hidden>
+      <dt>Чип</dt><dd id="i-chip">—</dd>
+      <dt>MAC</dt><dd id="i-mac">—</dd>
+      <dt>Флеш</dt><dd id="i-flash">—</dd>
+      <dt>Порт</dt><dd id="i-port">—</dd>
+    </dl>
+
+    <div id="connect-notice"></div>
+
+    <p class="hint">Порт не появился в списке — плату надо перевести в режим
+      загрузчика: зажать <b>BOOT</b>, коротко нажать <b>RESET</b>, отпустить
+      <b>BOOT</b>. На платах без кнопок помогает переподключение кабеля.</p>
+
+    <h3>Выбрать файлы</h3>
+    <p class="hint">Один склеенный образ пишется по адресу <code>0x0</code>.
+      Если файлы раздельные — добавить части и указать каждой своё смещение.</p>
+
+    <div id="parts"></div>
+
+    <div class="form-row form-row--bare">
+      <button class="btn btn--secondary btn--sm" id="btn-add-part">Добавить часть</button>
+    </div>
+
+    <div id="parts-errors"></div>
+
+    <details>
+      <summary>Типовая раскладка ESP32</summary>
+      <table class="layout-table">
+        <tr><th>Смещение</th><th>Что лежит</th></tr>
+        <tr><td id="row-bootloader">0x0</td><td>загрузчик (bootloader.bin)</td></tr>
+        <tr><td>0x8000</td><td>таблица разделов (partitions.bin)</td></tr>
+        <tr><td>0xe000</td><td>otadata (boot_app0.bin)</td></tr>
+        <tr><td>0x10000</td><td>приложение (firmware.bin)</td></tr>
+        <tr><td>—</td><td>образ файловой системы, адрес из таблицы разделов</td></tr>
+      </table>
+      <p class="hint">Загрузчик лежит с нуля не у всех: у ESP32 и ESP32-S2 это
+        <code>0x1000</code>, у ESP32-P4 — <code>0x2000</code>. После
+        подключения платы в таблице будет её собственный адрес.</p>
+    </details>
+
+    <h3>Прошить</h3>
+
+    <details>
+      <summary>Параметры флеша</summary>
+      <div class="form-row">
+        <span class="field-label"><label for="flash-size">Размер</label></span>
+        <select class="input" id="flash-size">
+          <option value="keep" selected>keep — как в образе</option>
+          <option value="detect">detect — определить</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <span class="field-label"><label for="flash-mode">Режим</label></span>
+        <select class="input" id="flash-mode">
+          <option value="keep" selected>keep</option>
+          <option value="dio">dio</option>
+          <option value="qio">qio</option>
+          <option value="dout">dout</option>
+          <option value="qout">qout</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <span class="field-label"><label for="flash-freq">Частота</label></span>
+        <select class="input" id="flash-freq">
+          <option value="keep" selected>keep</option>
+        </select>
+      </div>
+      <p class="hint">При <code>keep</code> параметры берутся из самого
+        образа — это то, что нужно почти всегда.</p>
+    </details>
+
+    <label class="check"><input type="checkbox" id="opt-erase">
+      <span>Стереть всю флеш-память перед записью — вместе с настройками
+        и сохранёнными данными</span></label>
+    <label class="check"><input type="checkbox" id="opt-compress" checked>
+      <span>Сжимать при передаче — быстрее</span></label>
+    <label class="check"><input type="checkbox" id="opt-verify" checked>
+      <span>Проверять записанное по MD5</span></label>
+    <label class="check"><input type="checkbox" id="opt-reset" checked>
+      <span>Перезагрузить плату после прошивки</span></label>
+
+    <div class="form-row form-row--bare">
+      <button class="btn btn--primary" id="btn-flash" disabled>Прошить</button>
+      <button class="btn btn--danger btn--sm" id="btn-erase" disabled>Стереть всю флеш-память</button>
+    </div>
+
+    <div class="progress-box" id="progress-box" hidden>
+      <progress id="progress" max="100" value="0"></progress>
+      <p class="progress-label" id="progress-label"></p>
+    </div>
+
+    <div id="result"></div>
+
+  </div>
+
+  <div class="card">
+    <div class="card__head">
+      <h3>Лог</h3>
+      <button class="btn btn--ghost btn--sm" id="btn-clear-log">Очистить</button>
+    </div>
+    <pre class="terminal" id="terminal" tabindex="0" aria-live="polite"></pre>
+  </div>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <span>
+      <span id="copyright">© Ватериус. Автоматизируем отправку показаний воды.</span><br>
+      <span class="footer-credit">Прошивает
+        <a href="https://github.com/espressif/esptool-js" target="_blank" rel="noopener">esptool-js</a>
+        от Espressif, лицензия
+        <a href="https://github.com/espressif/esptool-js/blob/main/LICENSE" target="_blank" rel="noopener">Apache&nbsp;2.0</a>.
+        Страница ничего не загружает на сервер.</span>
+    </span>
+    <span class="footer-links">
+      <a href="https://waterius.ru?utm_source=flasher&amp;utm_medium=link&amp;utm_campaign=flasher_24092026&amp;utm_content=footer&amp;utm_term=esp"
+         target="_blank" rel="noopener">waterius.ru</a>
+      <a class="icon-gh" href="https://github.com/waterius/waterius.github.io/tree/master/update"
+         target="_blank" rel="noopener" aria-label="Исходники страницы на GitHub"></a>
+    </span>
+  </div>
+</footer>
+
+<script type="module" src="flasher.js"></script>
+<script>
+// Библиотека тянется с unpkg. Если её не отдали — модуль не выполнится
+// вовсе, и страница молча останется с мёртвыми кнопками. Говорим об этом.
+setTimeout(function () {
+  if (window.__flasherReady) return;
+  document.getElementById("env-notice").innerHTML =
+    '<div class="notice notice--error"><span class="notice__icon">✕</span>' +
+    '<span>Не загрузилась библиотека прошивки с <code>unpkg.com</code>. ' +
+    'Проверьте интернет и блокировщики, затем обновите страницу.</span></div>';
+}, 10000);
+</script>
+</body>
+</html>
