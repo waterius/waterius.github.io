@@ -33,7 +33,6 @@ const el = {
   flashMode: $("#flash-mode"),
   flashFreq: $("#flash-freq"),
   optErase: $("#opt-erase"),
-  optCompress: $("#opt-compress"),
   optVerify: $("#opt-verify"),
   optReset: $("#opt-reset"),
   btnFlash: $("#btn-flash"),
@@ -201,7 +200,6 @@ function render() {
     el.flashMode,
     el.flashFreq,
     el.optErase,
-    el.optCompress,
     el.optVerify,
     el.optReset,
   ]) {
@@ -524,7 +522,11 @@ async function flash() {
       flashMode: el.flashMode.value,
       flashFreq: el.flashFreq.value,
       eraseAll: el.optErase.checked,
-      compress: el.optCompress.checked,
+      // Без сжатия. На ESP32-S3 сжатая запись заканчивалась отказом
+      // последней служебной команды FLASH_DEFL_END: все байты уже
+      // переданы, а чип отвечал мусором вместо статуса. Несжатая запись
+      // идёт через FLASH_END — дольше, но без этого шага.
+      compress: false,
       reportProgress: makeProgressReporter(fileArray.map((f) => f.data.length)),
       ...(el.optVerify.checked ? { calculateMD5Hash: (image) => md5(image) } : {}),
     });
@@ -590,6 +592,13 @@ async function eraseAll() {
 // --- ошибки ----------------------------------------------------------------
 
 const ERROR_HINTS = [
+  // Ловим раньше остальных: по тексту это отказ, а по сути — данные уже
+  // на плате. Команда идёт последней, после неё esptool-js только считает
+  // MD5, поэтому проверка до неё не доходит.
+  ["leave Flash mode",
+    "Все байты записаны, но плата не ответила на последнюю служебную команду. " +
+    "Чаще всего прошивка при этом <b>уже во флеше</b>: проверьте, появилась ли " +
+    "сеть устройства. Если нет — повторить на скорости 115200."],
   ["Failed to connect with the device",
     "Плата не отозвалась. Перевести её в режим загрузчика: зажать <b>BOOT</b>, " +
     "коротко нажать <b>RESET</b>, отпустить <b>BOOT</b> — и подключиться заново."],
