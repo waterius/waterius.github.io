@@ -468,8 +468,8 @@ function populateFlashSelects() {
   };
 
   fill(el.flashSize, Object.keys(chip.FLASH_SIZES || {}), [
-    ["keep", "keep — как в образе"],
     ["detect", "detect — определить"],
+    ["keep", "keep — как в образе"],
   ]);
   fill(el.flashFreq, Object.keys(chip.FLASH_FREQUENCY || {}), [["keep", "keep"]]);
 }
