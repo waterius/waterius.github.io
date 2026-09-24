@@ -111,8 +111,8 @@
       <div class="form-row">
         <span class="field-label"><label for="flash-size">Размер</label></span>
         <select class="input" id="flash-size">
-          <option value="keep" selected>keep — как в образе</option>
-          <option value="detect">detect — определить</option>
+          <option value="detect" selected>detect — определить</option>
+          <option value="keep">keep — как в образе</option>
         </select>
       </div>
       <div class="form-row">
@@ -131,8 +131,10 @@
           <option value="keep" selected>keep</option>
         </select>
       </div>
-      <p class="hint">При <code>keep</code> параметры берутся из самого
-        образа — это то, что нужно почти всегда.</p>
+      <p class="hint">Размер по умолчанию читается с самой платы и
+        прописывается в заголовок загрузчика. Режим и частота при
+        <code>keep</code> берутся из образа — это то, что нужно почти
+        всегда.</p>
     </details>
 
     <label class="check"><input type="checkbox" id="opt-erase">
