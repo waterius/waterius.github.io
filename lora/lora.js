@@ -312,7 +312,7 @@ const radioReply = (line) => PARAMS_RE.test(line) || ERROR_RE.test(line);
 
 function showReply(line, okText) {
   if (!line) {
-    radioResult("bad", "плата не ответила — прошивка без консоли или старше 0.2.4?");
+    radioResult("bad", "плата не ответила — прошивка без консоли, ниже 0.2.5?");
     return;
   }
   const m = line.match(PARAMS_RE);
