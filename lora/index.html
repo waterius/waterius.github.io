@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Консоль LoRa — Ватериус</title>
+<meta name="description" content="Прошивка и консоль платы хаба Ватериус LoRa из браузера: лог, параметры радио, передача кадров, шум эфира и несущая. Всё идёт в плату по USB и никуда больше.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 23 23'%3E%3Crect width='23' height='23' rx='3.2' fill='%23000'/%3E%3Ccircle cx='6.5' cy='11.3' r='3.9' fill='%231655F5'/%3E%3Ccircle cx='16.1' cy='11.3' r='3.9' fill='%23F53410'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="lora.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <span class="brand"><span class="dot dot--blue"></span><span class="dot dot--red"></span>Ватериус</span>
+    <h1>Консоль LoRa</h1>
+    <p class="sub">Прошивка и консоль платы хаба по USB. Работает в Chrome и Edge; файлы, лог и кадры
+      никуда не уходят, кроме платы.</p>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <div id="no-serial" class="notice notice--error" hidden>
+    Этот браузер не умеет работать с USB-портом. Откройте страницу в <b>Chrome</b> или <b>Edge</b>
+    на компьютере.
+  </div>
+
+  <section class="card" id="card-port">
+    <div class="card__head">
+      <h2>Плата</h2>
+      <span class="state" id="port-state">не подключена</span>
+    </div>
+    <div class="row">
+      <button class="btn btn--primary" id="btn-connect">Подключить</button>
+      <button class="btn" id="btn-disconnect" hidden>Отключить</button>
+      <button class="btn" id="btn-reset" disabled>Перезагрузить плату</button>
+    </div>
+    <p class="hint">Подключение может перезагрузить плату — это нормально. Порта нет в списке —
+      другой кабель: нужен кабель с данными, а не только питание.</p>
+  </section>
+
+  <section class="card">
+    <h2>Прошивка</h2>
+    <p class="hint">Склеенный образ <code>waterius-hub-&lt;версия&gt;.bin</code> пишется с адреса 0.
+      Параметры радио и сертификат хаба при этом стираются. Хаб с сертификатом обновляйте через его
+      веб-страницу файлом <code>firmware.bin</code>.</p>
+    <div class="row">
+      <input type="file" id="fw-file" accept=".bin">
+      <button class="btn btn--primary" id="btn-flash" disabled>Прошить</button>
+    </div>
+    <div id="fw-progress" hidden>
+      <progress id="fw-bar" max="100" value="0"></progress>
+      <span id="fw-label" class="mono"></span>
+    </div>
+    <div id="fw-result"></div>
+  </section>
+
+  <section class="card">
+    <h2>Радио</h2>
+    <form id="radio" class="fields" autocomplete="off">
+      <label data-f="freq">Частота, МГц<input name="freq" id="f-freq" type="number" step="0.001" min="863" max="870"><span class="err"></span></label>
+      <label data-f="bw">Полоса, кГц
+        <select name="bw" id="f-bw"><option>125</option><option>250</option><option>500</option></select><span class="err"></span></label>
+      <label data-f="sf">SF
+        <select name="sf" id="f-sf"><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option></select><span class="err"></span></label>
+      <label data-f="cr">Coding rate
+        <select name="cr" id="f-cr"><option value="5">4/5</option><option value="6">4/6</option><option value="7">4/7</option><option value="8">4/8</option></select><span class="err"></span></label>
+      <label data-f="power">Мощность, дБм<input name="power" id="f-power" type="number" step="1" min="-9" max="22"><span class="mw" id="f-mw"></span><span class="err"></span></label>
+      <label data-f="sync_word">Sync word, hex<input name="sync_word" id="f-sync" pattern="[0-9a-fA-F]{1,2}"><span class="err"></span></label>
+      <label data-f="preamble">Преамбула, символов<input name="preamble" id="f-preamble" type="number" step="1" min="6" max="1024"><span class="err"></span></label>
+    </form>
+    <div class="row">
+      <button class="btn" id="btn-read" disabled>Прочитать с платы</button>
+      <button class="btn btn--primary" id="btn-write" disabled>Записать в плату</button>
+      <span id="radio-result"></span>
+    </div>
+    <p class="hint">Параметры сохраняются в плате и действуют после перезагрузки. Профиль сети:
+      868.9 МГц, 125 кГц, SF9, CR 4/5, 12 дБм, sync word 34, преамбула 8.</p>
+  </section>
+
+  <section class="card">
+    <h2>Передача и замеры</h2>
+    <label class="wide">Кадр в hex<input id="tx-hex" class="mono" placeholder="00 11 22 …" spellcheck="false" autocomplete="off"></label>
+    <div class="row">
+      <button class="btn btn--primary" id="btn-tx" disabled>Передать</button>
+      <span class="gap"></span>
+      <label class="inline">каждые<input id="tx-every" type="number" min="100" max="3600000" step="100" value="5000">мс</label>
+      <button class="btn" id="btn-every" disabled>Передавать</button>
+      <button class="btn" id="btn-stop" disabled>Остановить</button>
+    </div>
+    <div class="row">
+      <button class="btn" id="btn-rssi" disabled>Шум эфира</button>
+      <span class="gap"></span>
+      <label class="inline">несущая<input id="cw-sec" type="number" min="1" max="60" step="1" value="10">с</label>
+      <button class="btn" id="btn-cw" disabled>Включить</button>
+      <button class="btn" id="btn-cw-stop" disabled>Выключить</button>
+    </div>
+    <p class="hint">Кнопки отправляют команды консоли — те же, что можно набрать в строке под логом
+      (<code>help</code> — список). Пока плата передаёт, она не слышит эфир.</p>
+  </section>
+
+  <section class="card">
+    <div class="card__head">
+      <h2>Лог</h2>
+      <span class="row row--tight">
+        <label class="inline"><input type="checkbox" id="log-follow" checked>следить</label>
+        <button class="btn btn--sm" id="btn-save">Сохранить лог</button>
+        <button class="btn btn--sm" id="btn-clear">Очистить окно</button>
+      </span>
+    </div>
+    <pre id="log" class="log" aria-live="off"></pre>
+    <form id="cmd-form" class="cmd" autocomplete="off">
+      <span class="prompt mono">&gt;</span>
+      <input id="cmd" class="mono" placeholder="команда, например lora или help" spellcheck="false" disabled>
+      <button class="btn btn--sm" id="btn-send" disabled>Отправить</button>
+    </form>
+  </section>
+
+</main>
+
+<footer class="wrap foot">
+  Прошивальщик — <a href="https://github.com/espressif/esptool-js" target="_blank" rel="noopener">esptool-js</a>
+  от Espressif. Прошивка любой ESP без консоли — <a href="../update/">/update</a>.
+</footer>
+
+<script type="module" src="lora.js"></script>
+</body>
+</html>

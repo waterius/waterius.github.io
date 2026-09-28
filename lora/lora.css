@@ -1,0 +1,111 @@
+/* Консоль LoRa. Токены скопированы из update/flasher.css (дизайн-система
+   личного кабинета), а не подключены оттуда: правка /update/ не должна
+   ломать эту страницу. */
+
+:root {
+  --accent: #1655f5;
+  --accent-hover: #1244c4;
+  --accent-bg: #ebf2fe;
+  --accent-disabled: #cfddfd;
+  --danger: #f53410;
+  --danger-bg: #fdd7ce;
+  --success-text: #217637;
+  --success-bg: #ceedda;
+  --bg: #f5f7fa;
+  --surface: #fff;
+  --text: #212529;
+  --muted: #5b7795;
+  --border: #e1e4ea;
+  --input-bg: rgba(232, 238, 254, 0.5);
+  --log-bg: #11161d;
+  --log-text: #d6dde6;
+  --radius-sm: 4px;
+  --radius: 12px;
+  --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 15px/1.5 Roboto, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding-inline: 16px; }
+.mono, code { font-family: var(--mono); }
+code { background: var(--accent-bg); padding: 1px 5px; border-radius: var(--radius-sm); font-size: 0.9em; }
+a { color: var(--accent); }
+
+.top { background: var(--surface); border-bottom: 1px solid var(--border); padding-block: 20px; margin-bottom: 20px; }
+.brand { display: inline-flex; align-items: center; gap: 4px; font-weight: 700; font-size: 14px; }
+.dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.dot--blue { background: var(--accent); }
+.dot--red { background: var(--danger); margin-right: 6px; }
+h1 { margin: 6px 0 4px; font-size: 28px; line-height: 1.2; }
+h2 { margin: 0; font-size: 18px; }
+.sub { margin: 0; color: var(--muted); max-width: 68ch; }
+
+.card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 18px 20px; margin-bottom: 16px; display: flex; flex-direction: column; gap: 12px;
+}
+.card__head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.state { font-size: 14px; color: var(--muted); }
+.state--ok { color: var(--success-text); font-weight: 500; }
+.hint { margin: 0; color: var(--muted); font-size: 14px; max-width: 72ch; }
+
+.row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.row--tight { gap: 8px; }
+.gap { flex: 0 0 12px; }
+
+.btn {
+  font: 500 14px/1 Roboto, system-ui, sans-serif; color: var(--accent); background: var(--surface);
+  border: 1px solid var(--accent); border-radius: 8px; padding: 9px 14px; cursor: pointer;
+}
+.btn:hover:not(:disabled) { background: var(--accent-bg); }
+.btn--primary { background: var(--accent); color: #fff; }
+.btn--primary:hover:not(:disabled) { background: var(--accent-hover); }
+.btn:disabled { opacity: 0.45; cursor: default; }
+.btn--sm { padding: 6px 10px; font-size: 13px; }
+.btn:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+input, select {
+  font: inherit; color: var(--text); background: var(--input-bg); border: 1px solid var(--border);
+  border-radius: 8px; padding: 7px 10px; min-width: 0;
+}
+input[type="file"] { background: none; border: 0; padding: 0; }
+input[type="checkbox"] { accent-color: var(--accent); }
+
+.fields { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px 14px; }
+.fields label, label.wide { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--muted); }
+label.inline { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; color: var(--muted); }
+label.inline input[type="number"] { width: 110px; }
+.mw { font-size: 12px; font-variant-numeric: tabular-nums; }
+.err { color: var(--danger); font-size: 12px; min-height: 1em; }
+.field-error input, .field-error select { border-color: var(--danger); }
+
+.ok { color: var(--success-text); }
+.bad { color: var(--danger); }
+.notice { border-radius: 8px; padding: 10px 14px; margin-bottom: 16px; }
+.notice--error { background: var(--danger-bg); }
+.notice--ok { background: var(--success-bg); }
+#fw-result .notice { margin: 0; }
+#fw-progress { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+progress { width: 260px; max-width: 100%; }
+
+.log {
+  margin: 0; background: var(--log-bg); color: var(--log-text); border-radius: 8px; padding: 10px 12px;
+  height: 420px; overflow: auto; font: 12px/1.45 var(--mono); white-space: pre-wrap; word-break: break-all;
+}
+.cmd { display: flex; align-items: center; gap: 8px; }
+.cmd input { flex: 1 1 auto; }
+.prompt { color: var(--muted); }
+
+.foot { color: var(--muted); font-size: 13px; padding-block: 8px 32px; }
+
+@media (max-width: 520px) {
+  h1 { font-size: 24px; }
+  .card { padding: 14px; }
+  .log { height: 320px; }
+}
