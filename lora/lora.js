@@ -302,7 +302,7 @@ function fillForm(m) {
   form.sf.value = m[4];
   form.cr.value = m[5];
   form.power.value = m[6];
-  form.sync_word.value = m[7].toUpperCase();
+  form.sync_word.value = "0x" + m[7].toUpperCase();
   form.preamble.value = m[8];
   showMw();
 }
@@ -312,7 +312,7 @@ const radioReply = (line) => PARAMS_RE.test(line) || ERROR_RE.test(line);
 
 function showReply(line, okText) {
   if (!line) {
-    radioResult("bad", "плата не ответила — прошивка без консоли или старше 0.2.4?");
+    radioResult("bad", "плата не ответила — прошивка без консоли, ниже 0.2.5?");
     return;
   }
   const m = line.match(PARAMS_RE);
@@ -348,9 +348,16 @@ async function writeRadio() {
     radioResult("bad", "заполните поля: " + empty.join(", ") + " — или «Прочитать с платы»");
     return;
   }
+  // Hex — только с 0x: «34» без префикса читается и как 0x34, и как 34 = 0x22
+  if (!/^0x[0-9a-f]{1,2}$/i.test(v.sync_word)) {
+    const label = form.querySelector('label[data-f="sync_word"]');
+    label.classList.add("field-error");
+    label.querySelector(".err").textContent = "нужно 0x и одна-две hex-цифры, например 0x34";
+    return;
+  }
   radioResult("", "записываем…");
   const cmd = `lora freq=${v.freq} bw=${v.bw} sf=${v.sf} cr=${v.cr} power=${v.power} ` +
-    `sync_word=0x${v.sync_word} preamble=${v.preamble}`;
+    `sync_word=${v.sync_word} preamble=${v.preamble}`;
   showReply(await ask(cmd, radioReply), "записано в плату");
 }
 

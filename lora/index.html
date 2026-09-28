@@ -71,7 +71,7 @@
       <label data-f="cr">Coding rate
         <select name="cr" id="f-cr"><option value="5">4/5</option><option value="6">4/6</option><option value="7">4/7</option><option value="8">4/8</option></select><span class="err"></span></label>
       <label data-f="power">Мощность, дБм<input name="power" id="f-power" type="number" step="1" min="-9" max="22"><span class="mw" id="f-mw"></span><span class="err"></span></label>
-      <label data-f="sync_word">Sync word, hex<input name="sync_word" id="f-sync" pattern="[0-9a-fA-F]{1,2}"><span class="err"></span></label>
+      <label data-f="sync_word">Sync word<input name="sync_word" id="f-sync" placeholder="0x34" pattern="0[xX][0-9a-fA-F]{1,2}"><span class="err"></span></label>
       <label data-f="preamble">Преамбула, символов<input name="preamble" id="f-preamble" type="number" step="1" min="6" max="1024"><span class="err"></span></label>
     </form>
     <div class="row">
@@ -80,7 +80,7 @@
       <span id="radio-result"></span>
     </div>
     <p class="hint">Параметры сохраняются в плате и действуют после перезагрузки. Профиль сети:
-      868.9 МГц, 125 кГц, SF9, CR 4/5, 12 дБм, sync word 34, преамбула 8.</p>
+      868.9 МГц, 125 кГц, SF9, CR 4/5, 12 дБм, sync word 0x34, преамбула 8.</p>
   </section>
 
   <section class="card">
